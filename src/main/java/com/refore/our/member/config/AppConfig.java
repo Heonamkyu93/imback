@@ -17,7 +17,7 @@ public class AppConfig {
     private final JavaMailSender mailSender;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

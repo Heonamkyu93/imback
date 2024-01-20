@@ -1,6 +1,10 @@
 package com.refore.our.common;
 
+import com.refore.our.member.exceptionHandler.CustomAccessDeniedHandler;
 import com.refore.our.member.jwt.JwtAuthFilter;
+import com.refore.our.member.jwt.JwtAuthorizationFilter;
+import com.refore.our.member.repository.MemberRepositoryDataJpa;
+import com.refore.our.member.repository.MemberRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +23,8 @@ public class SecurityConfig {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final CorsConfig corsConfig;
+    private final MemberRepositoryDataJpa memberRepositoryDataJpa;
+
 //    @Bean
 //    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
 //        return http.getSharedObject(AuthenticationManager.class);
@@ -32,14 +38,21 @@ public class SecurityConfig {
         return http
                 //     .addFilterBefore(new MyFilter(), BasicAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
                 )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .addFilter(corsConfig.corsFilter())
                 .addFilter(new JwtAuthFilter(authenticationManager()))  // AuthenticationManager를 전달
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(),memberRepositoryDataJpa))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/*").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/login").authenticated()
+                        .requestMatchers("/test/*").authenticated()
+                        .requestMatchers("/member/*").hasAuthority("ROLE_MEMBER")
+                        .requestMatchers("/admin/*").hasAuthority("ROLE_ADMIN")
                 )
                 .build();
     }

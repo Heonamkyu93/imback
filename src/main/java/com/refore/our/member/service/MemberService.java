@@ -8,6 +8,7 @@ import com.refore.our.member.repository.MemberRepositoryImpl;
 import com.refore.our.member.repository.MemberRepositoryDataJpa;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +21,13 @@ public class MemberService {
     private final MemberRepositoryImpl memberRepositoryImpl;
     private final MemberRepositoryDataJpa memberRepositoryDataJpa;
     private final ModelMapper modelMapper;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     public void memberJoin(JoinDto joinDto) {
         duplicationCheck(joinDto);
         JoinEntity joinEntity = modelMapper.map(joinDto, JoinEntity.class);
-        joinEntity.setMemberPassword(passwordEncoder.encode(joinEntity.getMemberPassword()));
+        joinEntity.setMemberPassword(bCryptPasswordEncoder.encode(joinEntity.getMemberPassword()));
         joinEntity.setRole(MemberRole.ROLE_GUEST);
+      //  joinEntity.setRole(MemberRole.ROLE_ADMIN);
         memberRepositoryImpl.memberJoin(joinEntity);
         joinMailSend(joinEntity);
     }
@@ -49,12 +51,6 @@ public class MemberService {
         }
     }
 
-    public void test() {
-       // JoinEntity member = memberRepositoryImpl.findMember("example@email.com");
-        Optional<JoinEntity> byMemberEmail = memberRepositoryDataJpa.findByMemberEmail("example1@email.com");
-        System.out.println("byMemberEmail.get().getMemberEmail() = " + byMemberEmail.get().getMemberEmail());
-     //   System.out.println("member.getMemberEmail() = " + member.getMemberEmail());
-    }
 }
 
 
