@@ -3,6 +3,7 @@ package com.refore.our.common;
 import com.refore.our.member.exceptionHandler.CustomAccessDeniedHandler;
 import com.refore.our.member.jwt.JwtAuthFilter;
 import com.refore.our.member.jwt.JwtAuthorizationFilter;
+import com.refore.our.member.jwt.TokenService;
 import com.refore.our.member.repository.MemberRepositoryDataJpa;
 import com.refore.our.member.repository.MemberRepositoryImpl;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class SecurityConfig {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final CorsConfig corsConfig;
     private final MemberRepositoryDataJpa memberRepositoryDataJpa;
-
+    private final TokenService tokenService;
 //    @Bean
 //    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
 //        return http.getSharedObject(AuthenticationManager.class);
@@ -45,8 +46,8 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .addFilter(corsConfig.corsFilter())
-                .addFilter(new JwtAuthFilter(authenticationManager()))  // AuthenticationManager를 전달
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(),memberRepositoryDataJpa))
+                .addFilter(new JwtAuthFilter(authenticationManager(),tokenService))  // AuthenticationManager를 전달
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(),memberRepositoryDataJpa,tokenService))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/login").authenticated()

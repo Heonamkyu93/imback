@@ -27,6 +27,7 @@ import java.util.Date;
 public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
     @Override  //login 요청을 시도하면 로그인 시도를 위해서 실행되는 메소드 id , password 확인후  정상인지 로그인시도
                 // authenticationManager 이걸로 로그인시도 하면  userDetailService가 호출되고 loaduserbyusername 메소드 실행
@@ -55,6 +56,17 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
         //SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
+
+
+        String refreshToken = Jwts.builder()
+                .setSubject("refresh")
+                .setExpiration(new Date(System.currentTimeMillis() + (60000 * 60 * 24 * 7))) // 예: 1주일
+                .claim("id", customUserDetails.getJoinEntity().getMemberId())
+                .signWith(SignatureAlgorithm.HS512, key.getBytes())
+                .compact();
+
+        tokenService.saveRefreshToken(customUserDetails.getJoinEntity().getMemberId(), refreshToken);
+
         String jwt = Jwts.builder()
                 .setSubject("access")
                 .setExpiration(new Date(System.currentTimeMillis() + (60000 * 10))) // 만료 시간 설정 10분
@@ -64,5 +76,6 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
                 .compact();
         System.out.println("jwt = " + jwt);
         response.addHeader("Authorization","Bearer "+jwt);
+        response.addHeader("Refresh-Token", "Bearer " + refreshToken);
     }
 }
