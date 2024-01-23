@@ -49,9 +49,8 @@ public class SecurityConfig {
                 .addFilter(new JwtAuthFilter(authenticationManager(),tokenService))  // AuthenticationManager를 전달
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(),memberRepositoryDataJpa,tokenService))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/login").authenticated()
-                        .requestMatchers("/test/*").authenticated()
+                        .requestMatchers("/out/*","/login").permitAll()
+                        .requestMatchers("/in/*").authenticated()
                         .requestMatchers("/member/*").hasAuthority("ROLE_MEMBER")
                         .requestMatchers("/admin/*").hasAuthority("ROLE_ADMIN")
                 )

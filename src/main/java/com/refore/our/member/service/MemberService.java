@@ -1,5 +1,6 @@
 package com.refore.our.member.service;
 
+import com.refore.our.member.config.auth.CustomUserDetails;
 import com.refore.our.member.dto.JoinDto;
 import com.refore.our.member.entity.JoinEntity;
 import com.refore.our.member.exception.DuplicateValueException;
@@ -8,6 +9,7 @@ import com.refore.our.member.repository.MemberRepositoryImpl;
 import com.refore.our.member.repository.MemberRepositoryDataJpa;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,7 @@ public class MemberService {
     // 인증메일 구현
     }
 
-    private void duplicationCheck(JoinDto joinDto) {
+    public void duplicationCheck(JoinDto joinDto) {
         JoinEntity member = memberRepositoryImpl.findMember(joinDto.getMemberEmail());
         if (member != null) {
             throw new DuplicateValueException("이메일", joinDto.getMemberEmail());
@@ -50,6 +52,12 @@ public class MemberService {
             throw new DuplicateValueException("닉네임", joinDto.getPhoneNumber());
         }
     }
+
+    public void infoUpdate(JoinDto joinDto) {
+        memberRepositoryImpl.infoUpdate(joinDto);
+    }
+
+
 
 }
 
