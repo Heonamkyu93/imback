@@ -30,14 +30,26 @@ public class MemberController {
         return ResponseEntity.created(location).build();
     }
 
-    @PostMapping("/in/infoUpdate")
+    @PutMapping("/in/infoUpdate")
     public void infoUpdate(@Validated JoinDto joinDto,@AuthenticationPrincipal CustomUserDetails customUserDetails){
         joinDto.setMemberId(customUserDetails.getJoinEntity().getMemberId());
         memberService.infoUpdate(joinDto);
     }
-    @GetMapping("/duplicatedCheck")
+    @PostMapping("/duplicatedCheck")
     public void duplicatedCheck(JoinDto joinDto){
         memberService.duplicationCheck(joinDto);
     }
+    @PostMapping("/in/passwordConfirm")
+    public boolean passwordConfirm(JoinDto joinDto,@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        joinDto.setMemberId(customUserDetails.getJoinEntity().getMemberId());
+        boolean result = memberService.passwordConfirm(joinDto);
+        return result;
+    }
+    @PutMapping("/in/passwordChange")
+    public void passwordChange(JoinDto joinDto,@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    joinDto.setMemberId(customUserDetails.getJoinEntity().getMemberId());
+        memberService.passwordChange(joinDto);
+    }
+    
 
 }

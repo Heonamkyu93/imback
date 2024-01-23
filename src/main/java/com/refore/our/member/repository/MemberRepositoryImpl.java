@@ -56,4 +56,9 @@ public class MemberRepositoryImpl {
         joinEntity1.setNickname(joinDto.getNickname());
         joinEntity1.setPhoneNumber(joinDto.getPhoneNumber());
     }
+    @Transactional
+    public void passwordChange(JoinDto joinDto) {
+        JoinEntity joinEntity = em.find(JoinEntity.class, joinDto.getMemberId());
+        joinEntity.setMemberPassword(joinEntity.getMemberPassword());
+    }
 }
