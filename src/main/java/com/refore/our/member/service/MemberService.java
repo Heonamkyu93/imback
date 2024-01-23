@@ -73,6 +73,10 @@ public class MemberService {
         joinDto.setMemberPassword(bCryptPasswordEncoder.encode(joinDto.getMemberPassword()));
         memberRepositoryImpl.passwordChange(joinDto);
     }
+    @Transactional
+    public void memberDelete(Long memberId) {
+        memberRepositoryDataJpa.deleteById(memberId);
+    }
 }
 
 
