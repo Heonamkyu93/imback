@@ -35,7 +35,6 @@ public class TokenService {
         try {
             String storedRefreshToken = redisTemplate.opsForValue().get("refreshToken:" + userId);
             if (storedRefreshToken != null && storedRefreshToken.equals(refreshToken)) {
-                // 토큰의 만료 여부도 함께 검증할 수 있습니다
                 Jws<Claims> claims = Jwts.parserBuilder()
                         .setSigningKey(key.getBytes())
                         .build()
@@ -43,7 +42,6 @@ public class TokenService {
                 return !claims.getBody().getExpiration().before(new Date());
             }
         } catch (Exception e) {
-            // 로깅 또는 에러 처리
         }
         return false;
     }

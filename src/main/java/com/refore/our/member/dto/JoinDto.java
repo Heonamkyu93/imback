@@ -31,7 +31,7 @@ public class JoinDto {
     @NotEmpty(message = "전화번호 등록은 필수 입니다.")
     @JsonProperty("phoneNumber")
     private String phoneNumber;
-    @NotEmpty(message = "전화번호 등록은 필수 입니다.")
+    @NotEmpty(message = "별명 등록은 필수 입니다.")
     @JsonProperty("nickname")
     private String nickname;
     private MemberRole role;

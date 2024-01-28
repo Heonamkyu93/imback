@@ -22,14 +22,15 @@ public class MemberController {
     private final MemberService memberService;
     private final ModelMapper modelMapper;
     @PostMapping("/join")
-    public ResponseEntity<?> join(@Validated @RequestBody JoinDto joinDto) {
-        memberService.memberJoin(joinDto);
+    public void join(@Validated @RequestBody JoinDto joinDto) {
+        System.out.println("joinDto.getMemberEmail() = " + joinDto.getMemberEmail());
+        /* memberService.memberJoin(joinDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(joinDto.getMemberEmail())
-                .toUri();
-        return ResponseEntity.created(location).build();
+                .toUri();*/
+      //  return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/in/infoUpdate")
@@ -38,10 +39,23 @@ public class MemberController {
         memberService.infoUpdate(joinDto);
     }
 
-    @PostMapping("/duplicatedCheck")
-    public void duplicatedCheck(JoinDto joinDto) {
+    @GetMapping("/emailDuplicatedCheck")
+    public void emailDuplicatedCheck(JoinDto joinDto) {
         memberService.duplicationCheck(joinDto);
     }
+    @GetMapping("/phoneNumberDuplicatedCheck")
+    public void phoneNumberDuplicatedCheck(JoinDto joinDto) {
+        memberService.duplicationCheck(joinDto);
+    }
+    @GetMapping("/nicknameDuplicatedCheck")
+    public void nicknameDuplicatedCheck(JoinDto joinDto) {
+        memberService.duplicationCheck(joinDto);
+    }
+
+
+
+
+
 
     @PostMapping("/in/passwordConfirm")
     public boolean passwordConfirm(JoinDto joinDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
