@@ -35,6 +35,7 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
         try {
             ObjectMapper om = new ObjectMapper();   // json
             JoinDto joinDto = om.readValue(request.getInputStream(), JoinDto.class);
+            System.out.println("여기");
             // loaduserbyusername 메소드 실행 정상이면 authentication 리턴됨
             // db에 있는 값과 일치
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -43,6 +44,7 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
                     authenticationManager.authenticate(authenticationToken);
         
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            System.out.println("여기는");
             return authentication;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -62,18 +64,19 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
                 .setSubject("refresh")
                 .setExpiration(new Date(System.currentTimeMillis() + (60000 * 60 * 24 * 7))) // 예: 1주일
                 .claim("id", customUserDetails.getJoinEntity().getMemberId())
+                .claim("email", customUserDetails.getJoinEntity().getMemberEmail())
                 .signWith(SignatureAlgorithm.HS512, key.getBytes())
                 .compact();
 
         tokenService.saveRefreshToken(customUserDetails.getJoinEntity().getMemberId(), refreshToken);
-
-        String jwt = Jwts.builder()
-                .setSubject("access")
-                .setExpiration(new Date(System.currentTimeMillis() + (60000 * 10))) // 만료 시간 설정 10분
-                .claim("id", customUserDetails.getJoinEntity().getMemberId())
-                .claim("email", customUserDetails.getJoinEntity().getMemberEmail())
-                .signWith(SignatureAlgorithm.HS512, key.getBytes()) // 알고리즘과 키 지정
-                .compact();
+        String jwt = tokenService.createNewJwtForUserId(customUserDetails.getJoinEntity().getMemberId(), customUserDetails.getJoinEntity().getMemberEmail());
+//        String jwt = Jwts.builder()
+//                .setSubject("access")
+//                .setExpiration(new Date(System.currentTimeMillis() + (60000 * 10))) // 만료 시간 설정 10분
+//                .claim("id", customUserDetails.getJoinEntity().getMemberId())
+//                .claim("email", customUserDetails.getJoinEntity().getMemberEmail())
+//                .signWith(SignatureAlgorithm.HS512, key.getBytes()) // 알고리즘과 키 지정
+//                .compact();
         System.out.println("jwt = " + jwt);
         response.addHeader("Authorization","Bearer "+jwt);
         response.addHeader("Refresh-Token", "Bearer " + refreshToken);

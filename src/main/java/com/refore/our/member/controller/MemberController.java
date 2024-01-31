@@ -6,6 +6,8 @@ import com.refore.our.member.entity.JoinEntity;
 import com.refore.our.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,17 +25,16 @@ public class MemberController {
 
     private final MemberService memberService;
     private final ModelMapper modelMapper;
-    @PostMapping("/join")
+    @PostMapping("/out/join")
     public void join(@Validated @RequestBody JoinDto joinDto) {
         System.out.println("joinDto.getMemberEmail() = " + joinDto.getMemberEmail());
-        /* memberService.memberJoin(joinDto);
-        URI location = ServletUriComponentsBuilder
+         memberService.memberJoin(joinDto);
+ /*       URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
                 .buildAndExpand(joinDto.getMemberEmail())
-                .toUri();*/
-      //  return ResponseEntity.created(location).build();
-    }
+                .toUri();
+        return ResponseEntity.created(location).build();
+ */   }
 
     @PutMapping("/in/infoUpdate")
     public void infoUpdate(@Validated JoinDto joinDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -39,17 +42,45 @@ public class MemberController {
         memberService.infoUpdate(joinDto);
     }
 
-    @GetMapping("/emailDuplicatedCheck")
-    public void emailDuplicatedCheck(JoinDto joinDto) {
+    @GetMapping("/out/emailDuplicatedCheck")
+    public ResponseEntity<Map<String, String>> emailDuplicatedCheck(@RequestParam(name = "value") String memberEmail) {
+        JoinDto joinDto = JoinDto.builder()
+                .memberEmail(memberEmail)
+                .build();
         memberService.duplicationCheck(joinDto);
+        String msg = "가입 가능한 이메일 입니다.";
+
+        Map<String, String> response = new HashMap<>();
+        response.put("msg", msg);
+        response.put("type", "email");
+        System.out.println("이메일");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping("/phoneNumberDuplicatedCheck")
-    public void phoneNumberDuplicatedCheck(JoinDto joinDto) {
+    @GetMapping("/out/phoneNumberDuplicatedCheck")
+    public ResponseEntity<Map<String, String>> phoneNumberDuplicatedCheck(@RequestParam(name = "value") String phoneNumber) {
+        JoinDto joinDto = JoinDto.builder()
+                .memberEmail(phoneNumber)
+                .build();
         memberService.duplicationCheck(joinDto);
+        String msg= "가입 가능한 전화번호 입니다.";
+        Map<String, String> response = new HashMap<>();
+        response.put("msg", msg);
+        response.put("type", "phoneNumber");
+        System.out.println("폰");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping("/nicknameDuplicatedCheck")
-    public void nicknameDuplicatedCheck(JoinDto joinDto) {
+    @GetMapping("/out/nicknameDuplicatedCheck")
+    public ResponseEntity<Map<String, String>> nicknameDuplicatedCheck(@RequestParam(name = "value") String nickname) {
+        JoinDto joinDto = JoinDto.builder()
+                .memberEmail(nickname)
+                .build();
         memberService.duplicationCheck(joinDto);
+        String msg= "가입 가능한 닉네임 입니다.";
+        Map<String, String> response = new HashMap<>();
+        response.put("msg", msg);
+        response.put("type", "nickname");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 

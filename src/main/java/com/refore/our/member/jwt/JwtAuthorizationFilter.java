@@ -1,6 +1,7 @@
 package com.refore.our.member.jwt;
 
 import com.refore.our.member.config.auth.CustomUserDetails;
+import com.refore.our.member.dto.JwtDto;
 import com.refore.our.member.entity.JoinEntity;
 import com.refore.our.member.repository.MemberRepositoryDataJpa;
 import io.jsonwebtoken.Claims;
@@ -40,6 +41,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     // 인증이나 권한 필요한경우 동작
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (request.getRequestURI().startsWith("/out/")) {
+            // "/out/*" 패턴에 해당하는 요청은 권한 검사를 수행하지 않고 허용합니다.
+            chain.doFilter(request, response);
+            return;
+        }
         String jwtHeader = request.getHeader("Authorization");
         System.out.println("권한필터동작");
         // header 가 있는지 확인
@@ -57,11 +63,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 String refreshTokenHeader = request.getHeader("Refresh-Token");
                 if (refreshTokenHeader != null && refreshTokenHeader.startsWith("Bearer ")) {
                     String refreshToken = refreshTokenHeader.replace("Bearer ", "");
-                    Long userId = getUserIdFromJwt(jwt);
-
+                    JwtDto userInfoFromJwt = tokenService.getUserInfoFromJwt(jwt);
+                    Long userId = userInfoFromJwt.getId();
+                    String email = userInfoFromJwt.getEmail();
                     if (tokenService.validateRefreshToken(refreshToken, userId)) {
                         // 새로운 Access 토큰 생성 및 발급
-                        String newJwt = tokenService.createNewJwtForUserId(userId);
+                        String newJwt = tokenService.createNewJwtForUserId(userId,email);
                         response.addHeader("Authorization", "Bearer " + newJwt);
                     }
                 }
@@ -124,18 +131,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
     }
 
-    private Long getUserIdFromJwt(String jwtToken) {
-        String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(key.getBytes())
-                    .build()
-                    .parseClaimsJws(jwtToken);
-            return Long.parseLong(claims.getBody().getSubject());
-        } catch (Exception e) {
-            throw new RuntimeException("JWT 토큰에서 사용자 ID 추출 실패", e);
-        }
-    }
+
 
 
 }
