@@ -26,15 +26,11 @@ public class MemberController {
     private final MemberService memberService;
     private final ModelMapper modelMapper;
     @PostMapping("/out/join")
-    public void join(@Validated @RequestBody JoinDto joinDto) {
+    public ResponseEntity<String> join(@Validated @RequestBody JoinDto joinDto) {
         System.out.println("joinDto.getMemberEmail() = " + joinDto.getMemberEmail());
          memberService.memberJoin(joinDto);
- /*       URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .buildAndExpand(joinDto.getMemberEmail())
-                .toUri();
-        return ResponseEntity.created(location).build();
- */   }
+        return ResponseEntity.ok("회원가입 성공");
+    }
 
     @PutMapping("/in/infoUpdate")
     public void infoUpdate(@Validated JoinDto joinDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {

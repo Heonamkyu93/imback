@@ -57,24 +57,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwt = request.getHeader("Authorization").replace("Bearer ", "");
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
         try {
-
-
-            if (jwtIsExpired(jwt)) {
-                String refreshTokenHeader = request.getHeader("Refresh-Token");
-                if (refreshTokenHeader != null && refreshTokenHeader.startsWith("Bearer ")) {
-                    String refreshToken = refreshTokenHeader.replace("Bearer ", "");
-                    JwtDto userInfoFromJwt = tokenService.getUserInfoFromJwt(jwt);
-                    Long userId = userInfoFromJwt.getId();
-                    String email = userInfoFromJwt.getEmail();
-                    if (tokenService.validateRefreshToken(refreshToken, userId)) {
-                        // 새로운 Access 토큰 생성 및 발급
-                        String newJwt = tokenService.createNewJwtForUserId(userId,email);
-                        response.addHeader("Authorization", "Bearer " + newJwt);
-                    }
-                }
-            } else {
-
-
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(key.getBytes()) // 문자열 키를 바이트 배열로 변환
                         .build()
@@ -87,7 +69,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 if (userEmail != null) {
                     Optional<JoinEntity> byId = memberRepositoryDataJpa.findById(userId);
                     CustomUserDetails customUserDetails = new CustomUserDetails(byId.get());
-                    System.out.println("customUserDetails.getJoinEntity().getRole() = " + customUserDetails.getJoinEntity().getRole());
                     //jwt 토큰을 통해서 정상이면 Authentication 객체를 만들어줌
                     Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, customUserDetails.getPassword(), customUserDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);  // 시큐리티세션에 접근 Authentication 객체를 저장
@@ -95,7 +76,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 }
 
 
-            }
 
 
             // 추가적인 검증 로직 (예: 유저 이름을 통한 검증, 만료 시간 확인 등)

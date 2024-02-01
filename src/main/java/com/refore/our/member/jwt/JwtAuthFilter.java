@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 // 로그인요청시 post 전송하면 UsernamePasswordAuthenticationFilter 가 동작
 // form로그인을 사용안해서 필터를 걸어줘야함
@@ -59,26 +61,22 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
         //SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
 
-
-        String refreshToken = Jwts.builder()
-                .setSubject("refresh")
-                .setExpiration(new Date(System.currentTimeMillis() + (60000 * 60 * 24 * 7))) // 예: 1주일
-                .claim("id", customUserDetails.getJoinEntity().getMemberId())
-                .claim("email", customUserDetails.getJoinEntity().getMemberEmail())
-                .signWith(SignatureAlgorithm.HS512, key.getBytes())
-                .compact();
-
+        String refreshToken = tokenService.createNewRefreshForUserId(customUserDetails.getJoinEntity().getMemberId());
         tokenService.saveRefreshToken(customUserDetails.getJoinEntity().getMemberId(), refreshToken);
         String jwt = tokenService.createNewJwtForUserId(customUserDetails.getJoinEntity().getMemberId(), customUserDetails.getJoinEntity().getMemberEmail());
-//        String jwt = Jwts.builder()
-//                .setSubject("access")
-//                .setExpiration(new Date(System.currentTimeMillis() + (60000 * 10))) // 만료 시간 설정 10분
-//                .claim("id", customUserDetails.getJoinEntity().getMemberId())
-//                .claim("email", customUserDetails.getJoinEntity().getMemberEmail())
-//                .signWith(SignatureAlgorithm.HS512, key.getBytes()) // 알고리즘과 키 지정
-//                .compact();
-        System.out.println("jwt = " + jwt);
+        response.setContentType("application/json;charset=UTF-8");
+        // 응답 바디에 정보 작성
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "로그인 성공");
+        responseBody.put("memberId", customUserDetails.getJoinEntity().getMemberId());
+        responseBody.put("memberEmail", customUserDetails.getJoinEntity().getMemberEmail());
+        responseBody.put("role",customUserDetails.getJoinEntity().getRole());
         response.addHeader("Authorization","Bearer "+jwt);
         response.addHeader("Refresh-Token", "Bearer " + refreshToken);
+        objectMapper.writeValue(response.getOutputStream(), responseBody);
+        System.out.println("jwt = " + jwt);
+
     }
 }

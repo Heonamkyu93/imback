@@ -60,6 +60,19 @@ public class TokenService {
                 .signWith(SignatureAlgorithm.HS512, key.getBytes())
                 .compact();
     }
+    public String createNewRefreshForUserId(Long userId) {
+        String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + (60000 * 60*24*7)); // 1주
+
+        return Jwts.builder()
+                .setSubject("refresh")
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .claim("id", userId)
+                .signWith(SignatureAlgorithm.HS512, key.getBytes())
+                .compact();
+    }
     public JwtDto getUserInfoFromJwt(String jwtToken) {
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
         try {
