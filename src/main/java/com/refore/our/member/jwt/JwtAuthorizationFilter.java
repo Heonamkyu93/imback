@@ -50,6 +50,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         System.out.println("권한필터동작");
         // header 가 있는지 확인
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
+            System.out.println("헤더에 없음");
             chain.doFilter(request, response);
             return;
         }
@@ -67,11 +68,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 String userEmail = claims.get("email", String.class);
 
                 if (userEmail != null) {
+                    System.out.println("정보있음");
                     Optional<JoinEntity> byId = memberRepositoryDataJpa.findById(userId);
                     CustomUserDetails customUserDetails = new CustomUserDetails(byId.get());
                     //jwt 토큰을 통해서 정상이면 Authentication 객체를 만들어줌
                     Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, customUserDetails.getPassword(), customUserDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);  // 시큐리티세션에 접근 Authentication 객체를 저장
+                    System.out.println(customUserDetails.getAuthorities());
+                    System.out.println(customUserDetails.getJoinEntity().getRole());
+                    System.out.println("필터통과");
                     chain.doFilter(request, response);
                 }
 

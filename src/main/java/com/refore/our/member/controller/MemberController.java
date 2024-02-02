@@ -103,6 +103,7 @@ public class MemberController {
     }
     @GetMapping("/in/info")
     public JoinDto memberInfoFind(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        System.out.println("인포");
         JoinEntity joinEntity = customUserDetails.getJoinEntity();
         JoinDto joinDto = modelMapper.map(joinEntity, JoinDto.class);
         return joinDto;
