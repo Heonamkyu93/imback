@@ -5,6 +5,7 @@ import com.refore.our.member.dto.JoinDto;
 import com.refore.our.member.entity.JoinEntity;
 import com.refore.our.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class MemberController {
 
     private final MemberService memberService;
@@ -102,11 +104,11 @@ public class MemberController {
         memberService.memberDelete(customUserDetails.getJoinEntity().getMemberId());
     }
     @GetMapping("/in/info")
-    public JoinDto memberInfoFind(@AuthenticationPrincipal CustomUserDetails customUserDetails){
-        System.out.println("인포");
+    public ResponseEntity<JoinDto> memberInfoFind(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         JoinEntity joinEntity = customUserDetails.getJoinEntity();
         JoinDto joinDto = modelMapper.map(joinEntity, JoinDto.class);
-        return joinDto;
+        joinDto.setMemberPassword("");
+        return new ResponseEntity<>(joinDto, HttpStatus.OK);
     }
 
 }

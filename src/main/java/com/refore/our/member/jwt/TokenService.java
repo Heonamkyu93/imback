@@ -49,7 +49,7 @@ public class TokenService {
     public String createNewJwtForUserId(Long userId,String email) {
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + (60000 * 10)); // 10분 후 만료
+        Date expiryDate = new Date(now.getTime() + (6000 * 1)); // 10분 후 만료
 
         return Jwts.builder()
                 .setSubject("access")
@@ -60,7 +60,7 @@ public class TokenService {
                 .signWith(SignatureAlgorithm.HS512, key.getBytes())
                 .compact();
     }
-    public String createNewRefreshForUserId(Long userId) {
+    public String createNewRefreshForUserId(Long userId,String email) {
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + (60000 * 60*24*7)); // 1주
@@ -70,6 +70,7 @@ public class TokenService {
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .claim("id", userId)
+                .claim("email", email)
                 .signWith(SignatureAlgorithm.HS512, key.getBytes())
                 .compact();
     }

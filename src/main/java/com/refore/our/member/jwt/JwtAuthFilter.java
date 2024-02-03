@@ -59,7 +59,7 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
         //SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
 
-        String refreshToken = tokenService.createNewRefreshForUserId(customUserDetails.getJoinEntity().getMemberId());
+        String refreshToken = tokenService.createNewRefreshForUserId(customUserDetails.getJoinEntity().getMemberId(),customUserDetails.getJoinEntity().getMemberEmail());
         tokenService.saveRefreshToken(customUserDetails.getJoinEntity().getMemberId(), refreshToken);
         String jwt = tokenService.createNewJwtForUserId(customUserDetails.getJoinEntity().getMemberId(), customUserDetails.getJoinEntity().getMemberEmail());
         response.setContentType("application/json;charset=UTF-8");

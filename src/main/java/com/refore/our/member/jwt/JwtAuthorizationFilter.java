@@ -45,6 +45,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // "/out/*" 패턴에 해당하는 요청은 권한 검사를 수행하지 않고 허용합니다.
             chain.doFilter(request, response);
             return;
+        } else if (request.getRequestURI().startsWith("/refresh-token")) {
+            System.out.println("여기 들어오나");
+            chain.doFilter(request, response);
+            return;
         }
         String jwtHeader = request.getHeader("Authorization");
         System.out.println("권한필터동작");
@@ -93,6 +97,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
             return;
         } catch (Exception e) {
+            System.out.println("jwt = " + jwt);
             logger.error("JWT token parsing failed: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
             return;
