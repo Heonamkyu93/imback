@@ -2,6 +2,7 @@ package com.refore.our.member.service;
 
 import com.refore.our.member.config.auth.CustomUserDetails;
 import com.refore.our.member.dto.JoinDto;
+import com.refore.our.member.dto.UpdateDto;
 import com.refore.our.member.entity.JoinEntity;
 import com.refore.our.member.exception.DuplicateValueException;
 import com.refore.our.member.memberEnum.MemberRole;
@@ -54,8 +55,8 @@ public class MemberService {
         }
     }
 
-    public void infoUpdate(JoinDto joinDto) {
-        memberRepositoryImpl.infoUpdate(joinDto);
+    public void infoUpdate(UpdateDto updateDto) {
+        memberRepositoryImpl.infoUpdate(updateDto);
     }
 
     @Transactional(readOnly = true)

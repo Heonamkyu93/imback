@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.refore.our.member.dto.JoinDto;
+import com.refore.our.member.dto.UpdateDto;
 import com.refore.our.member.entity.JoinEntity;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
@@ -51,11 +52,11 @@ public class MemberRepositoryImpl {
         return Expressions.FALSE;
     }
     @Transactional
-    public void infoUpdate(JoinDto joinDto) {   // 회원정보 업데이트시 유효성체크를 클라이언트에서 한 번 서버 컨트롤러에서 Validated 하기 때문에 따로 하지 않음
-        JoinEntity joinEntity1 = em.find(JoinEntity.class, joinDto.getMemberId());
-        joinEntity1.setMemberName(joinDto.getMemberName());
-        joinEntity1.setNickname(joinDto.getNickname());
-        joinEntity1.setPhoneNumber(joinDto.getPhoneNumber());
+    public void infoUpdate(UpdateDto updateDto) {   // 회원정보 업데이트시 유효성체크를 클라이언트에서 한 번 서버 컨트롤러에서 Validated 하기 때문에 따로 하지 않음
+        JoinEntity joinEntity1 = em.find(JoinEntity.class, updateDto.getMemberId());
+        joinEntity1.setMemberName(updateDto.getMemberName());
+        joinEntity1.setNickname(updateDto.getNickname());
+        joinEntity1.setPhoneNumber(updateDto.getPhoneNumber());
     }
     @Transactional
     public void passwordChange(JoinDto joinDto) {

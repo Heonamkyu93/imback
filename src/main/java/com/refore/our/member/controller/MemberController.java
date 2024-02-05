@@ -2,21 +2,18 @@ package com.refore.our.member.controller;
 
 import com.refore.our.member.config.auth.CustomUserDetails;
 import com.refore.our.member.dto.JoinDto;
+import com.refore.our.member.dto.UpdateDto;
 import com.refore.our.member.entity.JoinEntity;
 import com.refore.our.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,9 +32,9 @@ public class MemberController {
     }
 
     @PutMapping("/in/infoUpdate")
-    public void infoUpdate(@Validated JoinDto joinDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        joinDto.setMemberId(customUserDetails.getJoinEntity().getMemberId());
-        memberService.infoUpdate(joinDto);
+    public ResponseEntity<String> infoUpdate(@Validated @RequestBody UpdateDto updateDto) {
+        memberService.infoUpdate(updateDto);
+        return new ResponseEntity<>("정보수정완료",HttpStatus.OK);
     }
 
     @GetMapping("/out/emailDuplicatedCheck")
@@ -64,7 +61,6 @@ public class MemberController {
         Map<String, String> response = new HashMap<>();
         response.put("msg", msg);
         response.put("type", "phoneNumber");
-        System.out.println("폰");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("/out/nicknameDuplicatedCheck")

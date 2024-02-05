@@ -97,7 +97,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
             return;
         } catch (Exception e) {
-            System.out.println("jwt = " + jwt);
             logger.error("JWT token parsing failed: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
             return;
