@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(),memberRepositoryDataJpa,tokenService))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/out/*","/login","/refresh-token").permitAll()
-                        .requestMatchers("/in/*").authenticated()
+                        .requestMatchers("/in/*","/in/*/*").authenticated()
                         .requestMatchers("/member/*").hasAuthority("ROLE_MEMBER")
                         .requestMatchers("/admin/*").hasAuthority("ROLE_ADMIN")
                 )

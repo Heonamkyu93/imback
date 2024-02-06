@@ -28,7 +28,6 @@ public class MemberController {
     private final ModelMapper modelMapper;
     @PostMapping("/out/join")
     public ResponseEntity<String> join(@Validated @RequestBody JoinDto joinDto) {
-        System.out.println("joinDto.getMemberEmail() = " + joinDto.getMemberEmail());
          memberService.memberJoin(joinDto);
         return ResponseEntity.ok("회원가입 성공");
     }
@@ -50,7 +49,6 @@ public class MemberController {
         Map<String, String> response = new HashMap<>();
         response.put("msg", msg);
         response.put("type", "email");
-        System.out.println("이메일");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("/out/phoneNumberDuplicatedCheck")
@@ -86,8 +84,6 @@ public class MemberController {
 
     @PostMapping("/in/passwordConfirm")
     public ResponseEntity<String> passwordConfirm(@RequestBody LoginDto loginDto) {
-        System.out.println("비밀번호 확인 여기오나");
-        System.out.println("loginDto.getMemberId() = " + loginDto.getMemberId());
         boolean result = memberService.passwordConfirm(loginDto);
         return new ResponseEntity<>("본인 확인 완료",HttpStatus.OK);
     }

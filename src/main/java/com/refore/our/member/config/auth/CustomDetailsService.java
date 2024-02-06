@@ -1,6 +1,7 @@
 package com.refore.our.member.config.auth;
 
 import com.refore.our.member.entity.JoinEntity;
+import com.refore.our.member.exception.UserNotFoundException;
 import com.refore.our.member.repository.MemberRepositoryDataJpa;
 import com.refore.our.member.repository.MemberRepositoryImpl;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class CustomDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String memberEmail) throws UsernameNotFoundException {
         JoinEntity joinEntity = memberRepositoryDataJpa.findByMemberEmail(memberEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + memberEmail));
+                .orElseThrow(() -> new UserNotFoundException("이메일,비밀번호를 다시 확인하세요."));
         joinEntity.setLastLoginDate(LocalDate.now());
         return new CustomUserDetails(joinEntity);
     }
