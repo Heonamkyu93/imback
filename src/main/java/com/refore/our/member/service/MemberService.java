@@ -2,9 +2,12 @@ package com.refore.our.member.service;
 
 import com.refore.our.member.config.auth.CustomUserDetails;
 import com.refore.our.member.dto.JoinDto;
+import com.refore.our.member.dto.LoginDto;
 import com.refore.our.member.dto.UpdateDto;
 import com.refore.our.member.entity.JoinEntity;
 import com.refore.our.member.exception.DuplicateValueException;
+import com.refore.our.member.exception.PasswordMismatchException;
+import com.refore.our.member.exception.UserNotFoundException;
 import com.refore.our.member.memberEnum.MemberRole;
 import com.refore.our.member.repository.MemberRepositoryImpl;
 import com.refore.our.member.repository.MemberRepositoryDataJpa;
@@ -60,12 +63,14 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public boolean passwordConfirm(JoinDto joinDto) {
-        Optional<JoinEntity> byId = memberRepositoryDataJpa.findById(joinDto.getMemberId());
+    public boolean passwordConfirm(LoginDto loginDto) {
+        Optional<JoinEntity> byId = memberRepositoryDataJpa.findById(loginDto.getMemberId());
         if(byId.isPresent()){
-            return true;
+            boolean matches = bCryptPasswordEncoder.matches(loginDto.getMemberPassword(), byId.get().getMemberPassword());
+            if(matches) return true;
+            else throw new PasswordMismatchException();
         }else{
-            return false;
+            throw new UserNotFoundException("정보를 찾을 수 없습니다.다시 로그인 하시기 바랍니다.");
         }
 
     }
@@ -78,6 +83,9 @@ public class MemberService {
     public void memberDelete(Long memberId) {
         memberRepositoryDataJpa.deleteById(memberId);
     }
+
+
+
 }
 
 

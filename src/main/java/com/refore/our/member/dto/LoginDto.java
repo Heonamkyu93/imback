@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class LoginDto {
-
-
+    @JsonProperty("memberId")
+    private Long memberId;
     @JsonProperty("memberEmail")
     private String memberEmail;
     @JsonProperty("memberPassword")

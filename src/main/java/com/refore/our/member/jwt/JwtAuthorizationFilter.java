@@ -1,7 +1,6 @@
 package com.refore.our.member.jwt;
 
 import com.refore.our.member.config.auth.CustomUserDetails;
-import com.refore.our.member.dto.JwtDto;
 import com.refore.our.member.entity.JoinEntity;
 import com.refore.our.member.repository.MemberRepositoryDataJpa;
 import io.jsonwebtoken.Claims;

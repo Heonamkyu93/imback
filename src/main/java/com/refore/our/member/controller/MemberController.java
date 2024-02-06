@@ -2,8 +2,10 @@ package com.refore.our.member.controller;
 
 import com.refore.our.member.config.auth.CustomUserDetails;
 import com.refore.our.member.dto.JoinDto;
+import com.refore.our.member.dto.LoginDto;
 import com.refore.our.member.dto.UpdateDto;
 import com.refore.our.member.entity.JoinEntity;
+import com.refore.our.member.exception.UserNotFoundException;
 import com.refore.our.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,10 +85,11 @@ public class MemberController {
 
 
     @PostMapping("/in/passwordConfirm")
-    public boolean passwordConfirm(JoinDto joinDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        joinDto.setMemberId(customUserDetails.getJoinEntity().getMemberId());
-        boolean result = memberService.passwordConfirm(joinDto);
-        return result;
+    public ResponseEntity<String> passwordConfirm(@RequestBody LoginDto loginDto) {
+        System.out.println("비밀번호 확인 여기오나");
+        System.out.println("loginDto.getMemberId() = " + loginDto.getMemberId());
+        boolean result = memberService.passwordConfirm(loginDto);
+        return new ResponseEntity<>("본인 확인 완료",HttpStatus.OK);
     }
 
     @PutMapping("/in/passwordChange")
@@ -95,10 +98,16 @@ public class MemberController {
         memberService.passwordChange(joinDto);
     }
 
-    @DeleteMapping("/in/withdrawal")
-    public void withdrawal(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        memberService.memberDelete(customUserDetails.getJoinEntity().getMemberId());
+    @DeleteMapping("/in/withdrawal/{memberId}")
+    public ResponseEntity<String> withdrawal(@PathVariable Long memberId,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if(memberId!=customUserDetails.getJoinEntity().getMemberId()) throw new UserNotFoundException("정보를 찾을 수 없습니다.다시 로그인 하시기 바랍니다");
+        memberService.memberDelete(memberId);
+        return new ResponseEntity<>("회원탈퇴가 마무리 되었습니다. 감사합니다.",HttpStatus.OK);
     }
+
+
+
+
     @GetMapping("/in/info")
     public ResponseEntity<JoinDto> memberInfoFind(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         JoinEntity joinEntity = customUserDetails.getJoinEntity();
