@@ -4,7 +4,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.refore.our.member.dto.ChangePwdDto;
 import com.refore.our.member.dto.JoinDto;
+import com.refore.our.member.dto.LoginDto;
 import com.refore.our.member.dto.UpdateDto;
 import com.refore.our.member.entity.JoinEntity;
 import jakarta.persistence.EntityManager;
@@ -59,8 +61,8 @@ public class MemberRepositoryImpl {
         joinEntity1.setPhoneNumber(updateDto.getPhoneNumber());
     }
     @Transactional
-    public void passwordChange(JoinDto joinDto) {
-        JoinEntity joinEntity = em.find(JoinEntity.class, joinDto.getMemberId());
-        joinEntity.setMemberPassword(joinEntity.getMemberPassword());
+    public void passwordChange(ChangePwdDto changePwdDto) {
+        JoinEntity joinEntity = em.find(JoinEntity.class, changePwdDto.getMemberId());
+        joinEntity.setMemberPassword(changePwdDto.getMemberPassword());
     }
 }

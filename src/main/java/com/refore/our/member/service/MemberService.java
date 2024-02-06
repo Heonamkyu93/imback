@@ -1,6 +1,7 @@
 package com.refore.our.member.service;
 
 import com.refore.our.member.config.auth.CustomUserDetails;
+import com.refore.our.member.dto.ChangePwdDto;
 import com.refore.our.member.dto.JoinDto;
 import com.refore.our.member.dto.LoginDto;
 import com.refore.our.member.dto.UpdateDto;
@@ -75,9 +76,9 @@ public class MemberService {
 
     }
 
-    public void passwordChange(JoinDto joinDto) {
-        joinDto.setMemberPassword(bCryptPasswordEncoder.encode(joinDto.getMemberPassword()));
-        memberRepositoryImpl.passwordChange(joinDto);
+    public void passwordChange(ChangePwdDto changePwdDto) {
+        changePwdDto.setMemberPassword(bCryptPasswordEncoder.encode(changePwdDto.getMemberPassword()));
+        memberRepositoryImpl.passwordChange(changePwdDto);
     }
     @Transactional
     public void memberDelete(Long memberId) {

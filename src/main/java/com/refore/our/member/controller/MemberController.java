@@ -1,6 +1,7 @@
 package com.refore.our.member.controller;
 
 import com.refore.our.member.config.auth.CustomUserDetails;
+import com.refore.our.member.dto.ChangePwdDto;
 import com.refore.our.member.dto.JoinDto;
 import com.refore.our.member.dto.LoginDto;
 import com.refore.our.member.dto.UpdateDto;
@@ -85,20 +86,20 @@ public class MemberController {
     @PostMapping("/in/passwordConfirm")
     public ResponseEntity<String> passwordConfirm(@RequestBody LoginDto loginDto) {
         boolean result = memberService.passwordConfirm(loginDto);
-        return new ResponseEntity<>("본인 확인 완료",HttpStatus.OK);
+        return ResponseEntity.ok("본인 확인 완료");
     }
 
     @PutMapping("/in/passwordChange")
-    public void passwordChange(JoinDto joinDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        joinDto.setMemberId(customUserDetails.getJoinEntity().getMemberId());
-        memberService.passwordChange(joinDto);
+    public ResponseEntity<String> passwordChange(@RequestBody ChangePwdDto changePwdDto) {
+        memberService.passwordChange(changePwdDto);
+        return ResponseEntity.ok("비밀번호변경 완료");
     }
 
     @DeleteMapping("/in/withdrawal/{memberId}")
     public ResponseEntity<String> withdrawal(@PathVariable Long memberId,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if(memberId!=customUserDetails.getJoinEntity().getMemberId()) throw new UserNotFoundException("정보를 찾을 수 없습니다.다시 로그인 하시기 바랍니다");
         memberService.memberDelete(memberId);
-        return new ResponseEntity<>("회원탈퇴가 마무리 되었습니다. 감사합니다.",HttpStatus.OK);
+        return ResponseEntity.ok("회원탈퇴가 마무리 되었습니다. 감사합니다.");
     }
 
 
