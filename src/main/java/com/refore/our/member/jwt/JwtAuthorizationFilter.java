@@ -11,6 +11,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +26,7 @@ import java.util.Date;
 import java.util.Optional;
 
 // BasicAuthenticationFilter 권한이나 인증이 필요한경우만 필터가 동작
-
+@Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
     private TokenService tokenService;
@@ -40,34 +41,21 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     // 인증이나 권한 필요한경우 동작
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (request.getRequestURI().startsWith("/out/")) {
+            chain.doFilter(request, response);
+            return;
+        } else if (request.getRequestURI().startsWith("/refresh-token")) {
+            chain.doFilter(request, response);
+            return;
+        }
         String jwtHeader = request.getHeader("Authorization");
-
-        // header 가 있는지 확인
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
             chain.doFilter(request, response);
             return;
         }
-        // 토큰 검증후 정상적인 사용자인지 확인
         String jwt = request.getHeader("Authorization").replace("Bearer ", "");
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
         try {
-
-
-            if (jwtIsExpired(jwt)) {
-                String refreshTokenHeader = request.getHeader("Refresh-Token");
-                if (refreshTokenHeader != null && refreshTokenHeader.startsWith("Bearer ")) {
-                    String refreshToken = refreshTokenHeader.replace("Bearer ", "");
-                    Long userId = getUserIdFromJwt(jwt);
-
-                    if (tokenService.validateRefreshToken(refreshToken, userId)) {
-                        // 새로운 Access 토큰 생성 및 발급
-                        String newJwt = tokenService.createNewJwtForUserId(userId);
-                        response.addHeader("Authorization", "Bearer " + newJwt);
-                    }
-                }
-            } else {
-
-
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(key.getBytes()) // 문자열 키를 바이트 배열로 변환
                         .build()
@@ -80,15 +68,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 if (userEmail != null) {
                     Optional<JoinEntity> byId = memberRepositoryDataJpa.findById(userId);
                     CustomUserDetails customUserDetails = new CustomUserDetails(byId.get());
-                    System.out.println("customUserDetails.getJoinEntity().getRole() = " + customUserDetails.getJoinEntity().getRole());
                     //jwt 토큰을 통해서 정상이면 Authentication 객체를 만들어줌
                     Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, customUserDetails.getPassword(), customUserDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);  // 시큐리티세션에 접근 Authentication 객체를 저장
+                    log.info("filter={}","필터통과");
                     chain.doFilter(request, response);
                 }
 
 
-            }
 
 
             // 추가적인 검증 로직 (예: 유저 이름을 통한 검증, 만료 시간 확인 등)
@@ -124,18 +111,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
     }
 
-    private Long getUserIdFromJwt(String jwtToken) {
-        String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(key.getBytes())
-                    .build()
-                    .parseClaimsJws(jwtToken);
-            return Long.parseLong(claims.getBody().getSubject());
-        } catch (Exception e) {
-            throw new RuntimeException("JWT 토큰에서 사용자 ID 추출 실패", e);
-        }
-    }
+
 
 
 }

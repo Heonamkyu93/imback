@@ -1,6 +1,7 @@
 package com.refore.our.member.jwt;
 
 // TokenService.java
+import com.refore.our.member.dto.JwtDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -35,7 +36,6 @@ public class TokenService {
         try {
             String storedRefreshToken = redisTemplate.opsForValue().get("refreshToken:" + userId);
             if (storedRefreshToken != null && storedRefreshToken.equals(refreshToken)) {
-                // 토큰의 만료 여부도 함께 검증할 수 있습니다
                 Jws<Claims> claims = Jwts.parserBuilder()
                         .setSigningKey(key.getBytes())
                         .build()
@@ -43,22 +43,54 @@ public class TokenService {
                 return !claims.getBody().getExpiration().before(new Date());
             }
         } catch (Exception e) {
-            // 로깅 또는 에러 처리
         }
         return false;
     }
-    public String createNewJwtForUserId(Long userId) {
+    public String createNewJwtForUserId(Long userId,String email) {
         String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + (60000 * 10)); // 10분 후 만료
 
         return Jwts.builder()
-                .setSubject(userId.toString())
+                .setSubject("access")
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
+                .claim("id", userId)
+                .claim("email", email)
                 .signWith(SignatureAlgorithm.HS512, key.getBytes())
                 .compact();
     }
+    public String createNewRefreshForUserId(Long userId,String email) {
+        String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + (60000 * 60*24*7)); // 1주
 
+        return Jwts.builder()
+                .setSubject("refresh")
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .claim("id", userId)
+                .claim("email", email)
+                .signWith(SignatureAlgorithm.HS512, key.getBytes())
+                .compact();
+    }
+    public JwtDto getUserInfoFromJwt(String jwtToken) {
+        String key = "dkssudgktpdyakssktjqksrkqttmqslekgkgkghgh123testabcasdasdasdwseqasdasdasdasdasdasdasdsadassdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssseasda";
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(key.getBytes()) // 토큰을 검증하기 위한 키
+                    .build()
+                    .parseClaimsJws(jwtToken);
+            Long id = claims.getBody().get("id", Long.class); // Long 타입의 id 클레임 값 가져오기
+            String email = claims.getBody().get("email", String.class); // String 타입의 email 클레임 값 가져오기
+           JwtDto jwtDto = JwtDto.builder()
+                   .id(id)
+                   .email(email)
+                   .build();
+            return jwtDto;
+        } catch (Exception e) {
+            throw new RuntimeException("JWT 토큰에서 사용자 ID 추출 실패", e);
+        }
+    }
 
 }

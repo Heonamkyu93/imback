@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Setter
@@ -23,6 +25,23 @@ public class JoinEntity {
     private String memberPassword;
     private String phoneNumber;
     private String nickname;
+
+    private LocalDate memberJoinDate;
+    private LocalDate lastUpdateDate;
+    private LocalDate lastLoginDate;
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
+
+    @PrePersist
+    protected void onCreate() {
+        memberJoinDate = LocalDate.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastUpdateDate = LocalDate.now();
+    }
+
+
 }
