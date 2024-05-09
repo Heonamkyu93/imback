@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MenuDto {
-
+    private Long buggerId;
     private String buggerName;
     private String buggerPrice;
     private String buggerInfo;
