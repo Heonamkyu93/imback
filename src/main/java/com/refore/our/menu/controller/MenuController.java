@@ -22,8 +22,8 @@ public class MenuController {
 
 
     @GetMapping()
-    public ResponseEntity<String> menuIndex(@RequestBody MenuDto menuDto){
-        menuService.menuIndex(menuDto);
+    public ResponseEntity<String> menuIndex(){
+        menuService.menuIndex();
         return ResponseEntity.ok("테스트");
     }
 
@@ -33,6 +33,12 @@ public class MenuController {
     public ResponseEntity<String> menuDelete(@RequestBody MenuDto menuDto){
         menuService.menuDelete(menuDto);
         return ResponseEntity.ok("삭제");
+    }
+
+    @PutMapping()
+    public ResponseEntity<String> menuUpdate(@RequestBody MenuDto menuDto){
+        menuService.menuUpdate(menuDto);
+        return ResponseEntity.ok("업데이트");
     }
 
 
