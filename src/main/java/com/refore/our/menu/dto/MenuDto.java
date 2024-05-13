@@ -12,6 +12,8 @@ public class MenuDto {
     private String buggerName;
     private String buggerPrice;
     private String buggerInfo;
+    private String imgServer;
+    private String imgReal;
 
 
 
