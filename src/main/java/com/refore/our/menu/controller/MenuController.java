@@ -3,18 +3,20 @@ package com.refore.our.menu.controller;
 import com.refore.our.menu.dto.MenuDto;
 import com.refore.our.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class MenuController {
 
     private final MenuService menuService;
 
 
-    @PostMapping()
-    public ResponseEntity<String> menuInsert(@RequestBody MenuDto menuDto){
+    @PostMapping("/in/menuInsert")
+    public ResponseEntity<String> menuInsert(@ModelAttribute MenuDto menuDto){
         menuService.menuInsert(menuDto);
         return ResponseEntity.ok("등록");
     }

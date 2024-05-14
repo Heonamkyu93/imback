@@ -29,7 +29,8 @@ public class MemberController {
     private final ModelMapper modelMapper;
     @PostMapping("/out/join")
     public ResponseEntity<String> join(@Validated @RequestBody JoinDto joinDto) {
-         memberService.memberJoin(joinDto);
+        log.info(joinDto.getMemberPassword(),"pwd={}");
+        memberService.memberJoin(joinDto);
         return ResponseEntity.ok("회원가입 성공");
     }
 

@@ -5,7 +5,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "bugger")
-@Builder
 @Setter
 @Getter
 @NoArgsConstructor
@@ -20,4 +19,6 @@ public class MenuEntity {
     private String buggerName;
     private String buggerPrice;
     private String buggerInfo;
+    private String imgRealName;
+    private String imgServerName;
 }

@@ -5,20 +5,26 @@ import com.refore.our.menu.entity.MenuEntity;
 import com.refore.our.menu.exception.MenuNotFoundException;
 import com.refore.our.menu.mapper.MenuTransMapper;
 import com.refore.our.menu.repository.MenuRepository;
+import com.refore.our.menu.util.FileSave;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MenuService {
 
     private final MenuRepository menuRepository;
-
+    private final FileSave fileSave;
 
     @Transactional
     public void menuInsert(MenuDto menuDto) {
+        String serverName=fileSave.imgSave(menuDto.getImageFile());
         MenuEntity menuEntity = MenuTransMapper.INSTANCE.dtoToEntity(menuDto);
+        menuEntity.setImgRealName(menuDto.getImageFile().getOriginalFilename());
+        menuEntity.setImgServerName(serverName);
         menuRepository.save(menuEntity);
     }
     @Transactional
