@@ -8,6 +8,8 @@ import com.refore.our.menu.repository.MenuRepository;
 import com.refore.our.menu.util.FileSave;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,8 +59,10 @@ public class MenuService {
         }
     }
 
-    public void menuIndex() {
+    public Page<MenuDto> menuIndex(Pageable pageable) {
+        Page<MenuDto> menuDtoPage = menuRepository.findAll(pageable).map(MenuTransMapper.INSTANCE::entityToDto);
+        menuDtoPage.getContent();
 
-
+        return menuDtoPage;
     }
 }

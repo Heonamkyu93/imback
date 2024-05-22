@@ -4,6 +4,11 @@ import com.refore.our.menu.dto.MenuDto;
 import com.refore.our.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +28,10 @@ public class MenuController {
 
 
 
-    @GetMapping()
-    public ResponseEntity<String> menuIndex(){
-        menuService.menuIndex();
-        return ResponseEntity.ok("테스트");
+    @GetMapping("/menu")
+    public ResponseEntity<Page<MenuDto>> menuIndex(@PageableDefault(page = 0, size = 10, sort = "buggerPrice", direction = Sort.Direction.DESC)Pageable pageable){
+        Page<MenuDto> menuPage=menuService.menuIndex(pageable);
+        return new ResponseEntity<>(menuPage, HttpStatus.OK);
     }
 
 
