@@ -28,8 +28,8 @@ public class MenuController {
 
 
 
-    @GetMapping("/menu")
-    public ResponseEntity<Page<MenuDto>> menuIndex(@PageableDefault(page = 0, size = 10, sort = "buggerPrice", direction = Sort.Direction.DESC)Pageable pageable){
+    @GetMapping("/out/menu")
+    public ResponseEntity<Page<MenuDto>> menuIndex(@PageableDefault(page = 0, size = 9, sort = "buggerPrice", direction = Sort.Direction.DESC)Pageable pageable){
         Page<MenuDto> menuPage=menuService.menuIndex(pageable);
         return new ResponseEntity<>(menuPage, HttpStatus.OK);
     }

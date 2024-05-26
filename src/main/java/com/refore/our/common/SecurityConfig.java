@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .addFilter(new JwtAuthFilter(authenticationManager(),tokenService))  // AuthenticationManager를 전달
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(),memberRepositoryDataJpa,tokenService))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/out/*","/login","/refresh-token","/menu").permitAll()
+                        .requestMatchers("/out/*","/login","/refresh-token","/out/menu","/out/images/*").permitAll()
                         .requestMatchers("/in/*","/in/*/*").authenticated()
                         .requestMatchers("/member/*").hasAuthority("ROLE_MEMBER")
                         .requestMatchers("/admin/*").hasAuthority("ROLE_ADMIN")

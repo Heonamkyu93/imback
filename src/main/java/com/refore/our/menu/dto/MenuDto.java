@@ -14,6 +14,8 @@ public class MenuDto {
     private String buggerPrice;
     private String buggerInfo;
     private MultipartFile imageFile;
+    private String imgRealName;
+    private String imgServerName;
 
 
 
